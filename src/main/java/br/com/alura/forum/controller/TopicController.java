@@ -3,6 +3,8 @@ package br.com.alura.forum.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +22,8 @@ public class TopicController {
 	private TopicRepository topicRepository;
 
 	@GetMapping(value="/api/topics", produces= MediaType.APPLICATION_JSON_VALUE)
-	public List<TopicBriefOutputDto> listTopics(TopicSearchInputDto topicSearch){
+	public List<TopicBriefOutputDto> listTopics(TopicSearchInputDto topicSearch, 
+			Pageable pageRequest){
 		/*1
 		Category subcategory = new Category("Java", new Category("Programação"));
 		Course course = new Course("Java e JSF", subcategory);
@@ -31,7 +34,7 @@ public class TopicController {
 		List<Topic> topics = Arrays.asList(topic, topic, topic);*/
 		
 		Specification<Topic> topicSearchSpecification = topicSearch.build();
-		List<Topic> topics = topicRepository.findAll(topicSearchSpecification);
+		Page<Topic> topics = this.topicRepository.findAll(topicSearchSpecification, pageRequest);
 		
 		return  TopicBriefOutputDto.listFromTopics(topics);
 		
